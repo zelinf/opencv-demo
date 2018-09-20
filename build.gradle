@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+group = 'net.zelinf.demos'
+version = '1.0-SNAPSHOT'
+
+applicationDefaultJvmArgs = ['-Djava.library.path=native-libs']
+mainClassName = 'net.zelinf.demos.opencv_demo.App'
+
+repositories {
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    implementation name: 'opencv-343'
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+distributions {
+    custom {}
+    main {
+        contents {
+            from("native-libs") {
+                into "native-libs"
+            }
+        }
+    }
+    unix64 {
+        contents {
+            with((CopySpec) distributions.main.contents)
+//            from("native-libs/libopencv_java343.so") {
+//                into "native-libs"
+//            }
+        }
+    }
+}
+startScripts {
+    doLast {
+        unixScript.text = unixScript.text.replace("native-libs", "\$APP_HOME/native-libs")
+        windowsScript.text = windowsScript.text.replace("native-libs", "%APP_HOME%\\native-libs")
+    }
+}
